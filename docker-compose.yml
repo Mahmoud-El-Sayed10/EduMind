@@ -1,0 +1,41 @@
+
+services:
+  backend:
+    build:
+      context: ./backend
+    container_name: edumind-backend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+    environment:
+      - NODE_ENV=development
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=edumind_user
+      - DB_PASSWORD=edumind_pass
+      - DB_NAME=edumind_db
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+
+  postgres:
+    image: postgres:14.1-alpine
+    container_name: edumind-postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=edumind_user
+      - POSTGRES_PASSWORD=edumind_pass
+      - POSTGRES_DB=edumind_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
